@@ -3,49 +3,40 @@ Para abordar este problema optimizando tiempos de respuesta y costos computacion
 Se evitó una estructura multi-agente compleja para reducir la latencia y la probabilidad de alucinaciones.
 
 **Diagrama de Flujo de la Arquitectura:**
-
-[Nuevo Ticket]
-      │
-      ▼
-========================= CAPA 1: COMPRENSIÓN =========================
-[Extractor Determinista] (Script Python / Reglas)
- ├──> Extrae: texto, logs, order_id, user_id
- │
- ├──> ¿Faltan datos clave (ej. sin order_id y sin logs)?
- │     └──> [ACCIÓN]: Pedir más info al usuario y pausar.
- │
- ├──> ¿Es Spam o texto sin sentido?
- │     └──> [ACCIÓN]: Descartar y cerrar ticket.
- │
- └──> LLAMADA A TOOL: buscar_tickets_abiertos(order_id)
-       ├──> Si existe: [ACCIÓN] tool_merge_tickets() y notificar.
-       └──> Si es NUEVO: Pasar a Capa 2.
-
-      │
-      ▼
-========================= CAPA 2: DIAGNÓSTICO =========================
-[Agente LLM: Clasificador con Prompt Estricto]
- ├──> Input: {Queja del usuario} + {Logs del sistema filtrados}
- ├──> Lógica: Cruza la intención del usuario vs la verdad del Log.
- │
- ├──> Resultado A: BUG TÉCNICO (ej. timeout, exception)
- ├──> Resultado B: OPERACIÓN / EFECTIVIDAD (ej. anomalías de GPS)
- └──> Resultado C: CONFIGURACIÓN / CAPA 8 (ej. bloqueos lógicos, expirado)
-
-      │
-      ▼
-======================= CAPA 3: DECISIÓN Y ACCIÓN =======================
-[Motor de Reglas / Enrutador]
- ├──> Si [BUG]:
- │     └──> LLAMADA A TOOL: crear_ticket_jira() -> Notificar al cliente.
- │
- ├──> Si [OPERACIÓN]:
- │     └──> LLAMADA A TOOL: enrutar_soporte_humano("Logística") -> Notificar.
- │
- └──> Si [CONFIGURACIÓN]:
-       └──> LLAMADA A TOOL: auto_respuesta_resolutiva() -> Cerrar Ticket.
-
--------------------------------------------------------------------------
+graph TD
+    A([📥 Nuevo Ticket]) --> B[🛡️ CAPA 1: COMPRENSIÓN<br>Extractor Determinista]
+    B --> C[Extrae: texto, logs, order_id, user_id]
+    
+    C --> D{¿Faltan datos<br>clave?}
+    D -- Sí --> E[🛑 ACCIÓN: Pedir más info y pausar]
+    
+    D -- No --> F{¿Es Spam o<br>texto basura?}
+    F -- Sí --> G[🗑️ ACCIÓN: Descartar y cerrar ticket]
+    
+    F -- No --> H[[🔍 TOOL: buscar_tickets_abiertos]]
+    H --> I{¿Existe<br>ticket abierto?}
+    I -- Sí --> J[🔗 ACCIÓN: merge_tickets y notificar]
+    
+    I -- No es nuevo --> K[🧠 CAPA 2: DIAGNÓSTICO<br>Agente LLM con Prompt Estricto]
+    K --> L[Input: Queja de usuario + Logs]
+    L --> M{Lógica LLM:<br>Intención vs Verdad del Log}
+    
+    M -- "timeout, exception" --> N[🐛 BUG TÉCNICO]
+    M -- "anomalías GPS" --> O[🚚 OPERACIÓN / EFECTIVIDAD]
+    M -- "bloqueos, expirado" --> P[⚙️ CONFIGURACIÓN / CAPA 8]
+    
+    N --> Q[⚡ CAPA 3: DECISIÓN Y ACCIÓN<br>Motor de Reglas en Python]
+    O --> Q
+    P --> Q
+    
+    Q -- "Si es BUG" --> R[[🛠️ TOOL: crear_ticket_jira<br>Notificar al cliente]]
+    Q -- "Si es OPERACIÓN" --> S[[📞 TOOL: enrutar_soporte_humano<br>Notificar]]
+    Q -- "Si es CONFIGURACIÓN" --> T[[✉️ TOOL: auto_respuesta_resolutiva<br>Cerrar Ticket]]
+    
+    style A fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+    style B fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    style K fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    style Q fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
 Descripción de las Capas y Comunicación: 
 El flujo de información se maneja mediante payloads en formato JSON, 
 asegurando que la transición entre el sistema de tickets, el agente 
