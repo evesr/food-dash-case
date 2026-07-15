@@ -1,0 +1,6 @@
+# Dependencias del prototipo (MVP) - Clasificador de Tickets FoodDash
+# Generado para Python 3.10
+# Instalación:  pip install -r requirements.txt
+
+pandas==2.3.3
+groq==1.5.0
