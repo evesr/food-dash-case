@@ -104,4 +104,4 @@ Si el ticket es válido y nuevo, se construye un prompt estructurado inyectando 
 ## Capa 3: Decisión y Acción (Orquestación)
 El sistema lee el JSON estructurado devuelto por la Capa 2 y, basado en la categoría, acciona el árbol de decisiones.
 
-**Comunicación:** En esta etapa se ejecutan las herramientas de escritura (write tools). El orquestador hace peticiones POST a las plataformas correspondientes: llama a la API de Jira para crear incidencias, a la API del CRM de soporte para cambiar el estado de un ticket y asignarlo a una cola humana, o al motor de correo/mensajería para enviar una resolución automática al cliente.
+**Comunicación:** En esta etapa se ejecutan las herramientas de escritura. El orquestador hace peticiones POST a las plataformas correspondientes: llama a la API de Jira para crear incidencias, a la API del CRM de soporte para cambiar el estado de un ticket y asignarlo a una cola humana, o al motor de correo/mensajería para enviar una resolución automática al cliente.
