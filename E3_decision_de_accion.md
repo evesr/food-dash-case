@@ -4,7 +4,7 @@ El agente ejecuta una matriz de enrutamiento basada en la clasificación previa 
 ## 1. Bugs Técnicos (Prioridad Alta)
 
 * **Condición:** El log del sistema confirma un fallo de infraestructura, excepción de código o error lógico transaccional (ej. cobros duplicados).
-* **Acción del Agente:** * Escalar directamente al equipo de Ingeniería o Soporte Técnico Nivel 2.
+* **Acción del Agente:** * Escalar directamente al equipo de Ingeniería o Soporte Técnico.
 * Ejecutar herramienta: `crear_ticket_jira()`, adjuntando el ID del pedido, el log del error y el *stacktrace* si existe.
 * Respuesta al usuario: "Hemos detectado un inconveniente técnico con tu solicitud. Nuestro equipo de ingeniería ya fue notificado y está trabajando en una solución urgente."
 
@@ -24,7 +24,7 @@ El agente ejecuta una matriz de enrutamiento basada en la clasificación previa 
 
 * **Condición:** El log demuestra que la plataforma funciona, pero expone parámetros mal configurados por el usuario o bloqueos por políticas de negocio (ej. cupones expirados, notificaciones apagadas).
 * **Acción del Agente:**
-* Resolución automática (Deflexión de Nivel 1). No escalar a humanos.
+* Resolución automática. No escalar a humanos.
 * Respuesta al usuario: Explicar la causa raíz directamente (ej. "Tu cupón expiró el día de ayer" o "Tienes las notificaciones de la tablet en silencio") y proveer los pasos para corregirlo.
 * Cerrar el ticket automáticamente.
 
