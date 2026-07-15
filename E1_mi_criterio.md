@@ -1,4 +1,3 @@
-# Entregable 1: Mi Criterio
 
 ## Enfoque general y priorización
 
