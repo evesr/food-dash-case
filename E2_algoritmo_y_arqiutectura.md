@@ -4,46 +4,52 @@ Se evitó una estructura multi-agente compleja para reducir la latencia y la pro
 
 **Diagrama de Flujo de la Arquitectura:**
 
-[Nuevo Ticket] 
-       │
-       ▼
-==================== CAPA 1: COMPRENSIÓN ====================
+[Nuevo Ticket]
+      │
+      ▼
+========================= CAPA 1: COMPRENSIÓN =========================
 [Extractor Determinista] (Script Python / Reglas)
- ├─> Extrae: texto, logs, order_id, user_id
+ ├──> Extrae: texto, logs, order_id, user_id
  │
- ├─> ¿Faltan datos clave (ej. sin order_id y sin logs)? 
- │    └─> [ACCIÓN]: Pedir más info al usuario y pausar.
+ ├──> ¿Faltan datos clave (ej. sin order_id y sin logs)?
+ │     └──> [ACCIÓN]: Pedir más info al usuario y pausar.
  │
- ├─> ¿Es Spam o texto sin sentido?
- │    └─> [ACCIÓN]: Descartar y cerrar ticket.
+ ├──> ¿Es Spam o texto sin sentido?
+ │     └──> [ACCIÓN]: Descartar y cerrar ticket.
  │
- └─> LLAMADA A TOOL: buscar_tickets_abiertos(order_id)
-      ├─> Si existe: [ACCIÓN] tool_merge_tickets() y notificar.
-      └─> Si es NUEVO: Pasar a Capa 2.
-       │
-       ▼
-==================== CAPA 2: DIAGNÓSTICO ====================
+ └──> LLAMADA A TOOL: buscar_tickets_abiertos(order_id)
+       ├──> Si existe: [ACCIÓN] tool_merge_tickets() y notificar.
+       └──> Si es NUEVO: Pasar a Capa 2.
+
+      │
+      ▼
+========================= CAPA 2: DIAGNÓSTICO =========================
 [Agente LLM: Clasificador con Prompt Estricto]
- ├─> Input: {Queja del usuario} + {Logs del sistema filtrados}
- ├─> Lógica: Cruza la intención del usuario vs la verdad del Log.
+ ├──> Input: {Queja del usuario} + {Logs del sistema filtrados}
+ ├──> Lógica: Cruza la intención del usuario vs la verdad del Log.
  │
- ├─> Resultado A: BUG TÉCNICO (ej. timeout, exception)
- ├─> Resultado B: OPERACIÓN / EFECTIVIDAD (ej. GPS, bloqueos lógicos)
- └─> Resultado C: CONFIGURACIÓN / CAPA 8 (ej. muteado, expirado)
-       │
-       ▼
-==================== CAPA 3: DECISIÓN Y ACCIÓN ====================
+ ├──> Resultado A: BUG TÉCNICO (ej. timeout, exception)
+ ├──> Resultado B: OPERACIÓN / EFECTIVIDAD (ej. anomalías de GPS)
+ └──> Resultado C: CONFIGURACIÓN / CAPA 8 (ej. bloqueos lógicos, expirado)
+
+      │
+      ▼
+======================= CAPA 3: DECISIÓN Y ACCIÓN =======================
 [Motor de Reglas / Enrutador]
- ├─> Si [BUG]: 
- │    └─> LLAMADA A TOOL: crear_ticket_jira() -> Notificar al cliente.
+ ├──> Si [BUG]:
+ │     └──> LLAMADA A TOOL: crear_ticket_jira() -> Notificar al cliente.
  │
- ├─> Si [OPERACIÓN]: 
- │    └─> LLAMADA A TOOL: enrutar_soporte_humano("Logística") -> Notificar.
+ ├──> Si [OPERACIÓN]:
+ │     └──> LLAMADA A TOOL: enrutar_soporte_humano("Logística") -> Notificar.
  │
- └─> Si [CONFIGURACIÓN]: 
-      └─> LLAMADA A TOOL: auto_respuesta_resolutiva() -> Cerrar Ticket.
-Descripción de las Capas y Comunicación
-El flujo de información se maneja mediante payloads en formato JSON, asegurando que la transición entre el sistema de tickets, el agente de IA y las herramientas externas sea estructurada.
+ └──> Si [CONFIGURACIÓN]:
+       └──> LLAMADA A TOOL: auto_respuesta_resolutiva() -> Cerrar Ticket.
+
+-------------------------------------------------------------------------
+Descripción de las Capas y Comunicación: 
+El flujo de información se maneja mediante payloads en formato JSON, 
+asegurando que la transición entre el sistema de tickets, el agente 
+de IA y las herramientas externas sea estructurada.
 
 ## Capa 1: Comprensión (Filtro Determinista)
 Antes de invocar al modelo de lenguaje, un script recibe el payload del ticket. Su objetivo es normalizar los datos, extraer entidades (como el order_id) y ejecutar validaciones básicas.
